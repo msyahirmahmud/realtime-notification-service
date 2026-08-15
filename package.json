@@ -1,0 +1,12 @@
+{
+  "name": "realtime-notification-service",
+  "version": "1.0.0",
+  "description": "Event-driven Real-Time Notification & Chat Server supporting rooms and broadcasts",
+  "main": "server.js",
+  "scripts": {
+    "test": "node --test tests/server.test.js",
+    "start": "node server.js"
+  },
+  "author": "Syahir Mahmud",
+  "license": "MIT"
+}
