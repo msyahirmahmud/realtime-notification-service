@@ -11,6 +11,17 @@ describe('Real-Time Notification Service Unit Tests', () => {
     assert.strictEqual(members[0], 'user-1');
   });
 
+  test('emitTypingStatus dispatches typing events', () => {
+    const hub = new NotificationHub();
+    let status = null;
+    hub.on('typing_status', ev => { status = ev; });
+
+    hub.emitTypingStatus('user-1', 'general', true);
+    assert.notStrictEqual(status, null);
+    assert.strictEqual(status.isTyping, true);
+    assert.strictEqual(hub.getTypingUsers('general').length, 1);
+  });
+
   test('broadcast emits message event and records history', () => {
     const hub = new NotificationHub();
     let emitted = null;

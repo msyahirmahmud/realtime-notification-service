@@ -9,6 +9,7 @@ class NotificationHub extends EventEmitter {
     super();
     this.rooms = {}; // roomName -> Set of userIds
     this.history = [];
+    this.typing = {}; // roomName -> Set of typing userIds
   }
 
   joinRoom(userId, roomName) {
@@ -25,6 +26,22 @@ class NotificationHub extends EventEmitter {
       return true;
     }
     return false;
+  }
+
+  emitTypingStatus(userId, roomName, isTyping = true) {
+    if (!this.typing[roomName]) this.typing[roomName] = new Set();
+    if (isTyping) {
+      this.typing[roomName].add(userId);
+    } else {
+      this.typing[roomName].delete(userId);
+    }
+    const payload = { userId, roomName, isTyping, timestamp: new Date().toISOString() };
+    this.emit('typing_status', payload);
+    return payload;
+  }
+
+  getTypingUsers(roomName) {
+    return Array.from(this.typing[roomName] || []);
   }
 
   broadcast(roomName, message, senderId = 'system') {
