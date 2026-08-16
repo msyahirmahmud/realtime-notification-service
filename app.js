@@ -9,6 +9,7 @@ class NotificationHub extends EventEmitter {
     super();
     this.rooms = {}; // roomName -> Set of userIds
     this.history = [];
+    this.typing = {}; // roomName -> Set of typing userIds
     this.userLogs = {}; // senderId -> array of timestamps
   }
 
@@ -28,10 +29,25 @@ class NotificationHub extends EventEmitter {
     return false;
   }
 
+  emitTypingStatus(userId, roomName, isTyping = true) {
+    if (!this.typing[roomName]) this.typing[roomName] = new Set();
+    if (isTyping) {
+      this.typing[roomName].add(userId);
+    } else {
+      this.typing[roomName].delete(userId);
+    }
+    const payload = { userId, roomName, isTyping, timestamp: new Date().toISOString() };
+    this.emit('typing_status', payload);
+    return payload;
+  }
+
+  getTypingUsers(roomName) {
+    return Array.from(this.typing[roomName] || []);
+  }
+
   checkRateLimit(senderId, limit = 5) {
     const now = Date.now();
     if (!this.userLogs[senderId]) this.userLogs[senderId] = [];
-    // Filter timestamps within last 1 second window
     this.userLogs[senderId] = this.userLogs[senderId].filter(t => now - t < 1000);
 
     if (this.userLogs[senderId].length >= limit) {
