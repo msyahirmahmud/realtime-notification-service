@@ -11,6 +11,14 @@ describe('Real-Time Notification Service Unit Tests', () => {
     assert.strictEqual(members[0], 'user-1');
   });
 
+  test('checkRateLimit blocks excessive event flooding', () => {
+    const hub = new NotificationHub();
+    for (let i = 0; i < 5; i++) {
+      assert.strictEqual(hub.checkRateLimit('spammer', 5), true);
+    }
+    assert.strictEqual(hub.checkRateLimit('spammer', 5), false);
+  });
+
   test('broadcast emits message event and records history', () => {
     const hub = new NotificationHub();
     let emitted = null;
