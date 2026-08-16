@@ -10,6 +10,7 @@ class NotificationHub extends EventEmitter {
     this.rooms = {}; // roomName -> Set of userIds
     this.history = [];
     this.typing = {}; // roomName -> Set of typing userIds
+    this.userLogs = {}; // senderId -> array of timestamps
   }
 
   joinRoom(userId, roomName) {
@@ -44,7 +45,24 @@ class NotificationHub extends EventEmitter {
     return Array.from(this.typing[roomName] || []);
   }
 
+  checkRateLimit(senderId, limit = 5) {
+    const now = Date.now();
+    if (!this.userLogs[senderId]) this.userLogs[senderId] = [];
+    this.userLogs[senderId] = this.userLogs[senderId].filter(t => now - t < 1000);
+
+    if (this.userLogs[senderId].length >= limit) {
+      return false; // Rate limit exceeded
+    }
+
+    this.userLogs[senderId].push(now);
+    return true;
+  }
+
   broadcast(roomName, message, senderId = 'system') {
+    if (!this.checkRateLimit(senderId)) {
+      throw new Error(`Rate limit exceeded for user: ${senderId}`);
+    }
+
     const payload = {
       id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
       roomName,
