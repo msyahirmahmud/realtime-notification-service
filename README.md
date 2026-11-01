@@ -3,7 +3,6 @@
 [![Build Status](https://github.com/msyahirmahmud/realtime-notification-service/actions/workflows/ci.yml/badge.svg)](https://github.com/msyahirmahmud/realtime-notification-service/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org)
-[![Tests Passing](https://img.shields.io/badge/Tests-100%25-brightgreen.svg)]()
 
 > Event-driven Real-Time Notification & Chat Server supporting channels, message history, and user join/leave hooks.
 
